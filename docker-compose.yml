@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+  api-ocr:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8080"
+    volumes:
+      - .:/usr/src/app
+    container_name: pawang-backend-ocr
+    networks:
+      - pawang-networks
+    restart: unless-stopped
+
+networks:
+  pawang-networks:
