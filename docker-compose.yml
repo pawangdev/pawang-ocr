@@ -7,7 +7,7 @@ services:
     ports:
       - "8888:8080"
     volumes:
-      - .:/usr/src/app
+      - .:/app
     container_name: pawang-backend-ocr
     networks:
       - pawang-networks

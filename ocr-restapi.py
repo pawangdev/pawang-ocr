@@ -1,3 +1,4 @@
+from tokenize import Double
 from flask import Flask, jsonify, request
 from PIL import Image
 from matplotlib.pyplot import text
@@ -6,6 +7,7 @@ from pytesseract import Output
 import pytesseract
 import cv2
 import os
+import re
 
 
 app = Flask(__name__)
@@ -15,7 +17,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/")
 def index():
-    return "Halo"
+    return "Pawang OCR Service"
 
 
 def containsNumber(value):
@@ -54,7 +56,23 @@ def findAmount(total):
         return temp
 
 
-@app.route('/uploader', methods=['POST'])
+def findTotal(text):
+    for word in text.lower().split("\n"):
+        if 'total' in word:
+            removeChars = re.sub("[^\s\.,\d]", "", word).replace(
+                " ", "")
+            regexAmount = re.search(
+                r'^(0|[1-9][0-9]{0,2})([\.,]\d{3})*(\.\d{1,2})?$', removeChars)
+            return regexAmount.group()
+        elif 'subtotal' in word:
+            removeChars = re.sub("[^\s\.,\d]", "", word).replace(
+                " ", "")
+            regexAmount = re.search(
+                r'^(0|[1-9][0-9]{0,2})([\.,]\d{3})*(\.\d{1,2})?$', removeChars)
+            return regexAmount.group()
+
+
+@app.route('/scan', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
@@ -75,36 +93,35 @@ def upload_file():
         cv2.imwrite(ofilename, image)
 
         # perform OCR on the processed image
-        myconfig = r"--psm 11 --oem 3"
-        data = pytesseract.image_to_data(
-            image, config=myconfig, output_type=Output.DICT)
-        amount_boxes = len(data['text'])
-        texts = []
+        myconfig = r"--oem 3 --psm 6"
+        data = pytesseract.image_to_string(
+            image, config=myconfig, lang='ind')
 
-        for i in range(amount_boxes):
-            if float(data['conf'][i]) > 75:
-                (x, y, width, height) = (
-                    data['left'][i], data['top'][i], data['width'][i], data['height'][i])
-                image = cv2.rectangle(
-                    image, (x, y), (x+width, y+height), (0, 255, 0), 2)
-                texts.append(data['text'][i])
-        if len(texts) == 0:
-            texts.append((pytesseract.image_to_string(
-                Image.open(ofilename))).split())
+        # for i in range(amount_boxes):
+        #     if float(data['conf'][i]) > 75:
+        #         (x, y, width, height) = (
+        #             data['left'][i], data['top'][i], data['width'][i], data['height'][i])
+        #         image = cv2.rectangle(
+        #             image, (x, y), (x+width, y+height), (0, 255, 0), 2)
+        #         texts.append(data['text'][i])
+        # if len(texts) == 0:
+        #     texts.append((pytesseract.image_to_string(
+        #         Image.open(ofilename))).split())
 
-        final_amounts = findAmount(texts)
+        final_amounts = 0
+        final_amounts = findTotal(data)
 
         # remove the processed image
         os.remove(ofilename)
 
         if len(final_amounts) != 0:
             data_returned = {
-                "message": "1",
+                "status": "true",
                 "amounts": final_amounts,
             }
         else:
             data_returned = {
-                "message": "0",
+                "status": "false",
                 "amounts": final_amounts,
             }
 
