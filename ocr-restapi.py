@@ -71,7 +71,7 @@ def findTotal(text):
 
 @app.route('/', methods=['GET'])
 def index():
-    return 'Hello World'
+    return 'Team Pawang OCR 2022'
 
 @app.route('/scan', methods=['POST'])
 def upload_file():
