@@ -12,62 +12,24 @@ UPLOAD_FOLDER = 'uploaded_img/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def ocrOCR(image):
-    myconfig = r"--oem 3 --psm 11"
-    return list(pytesseract.image_to_string(Image.open(io.BytesIO(image)), config=myconfig, lang='ind').split("\n"))
+    myconfig = r"--oem 3 --psm 6"
+    return pytesseract.image_to_string(image, config=myconfig, lang='ind')
 
 
 def findTotal(text):
-    flag = 0
-    tempAmount = []
-    finalAmount = 0
-
-    # remove all empty string in the list
-    while("" in text):
-        text.remove("")
-
-    # finding total's index
-    for index, word in enumerate(text):
-        word = word.lower()
-        if ('total' in word) and (word.__eq__('subtotal') == False):
-            flag = index
-            # print('masuk pak eko')
-            # print('flag: {}'.format(flag))
-            # print('text[flag]: {}'.format(text[flag]))
-
-    # finding the total amount
-    for word in text[flag:]:
-        word = word.lower()
-
-        # remove special characters
-        word = re.sub('[^A-Za-z0-9]+', '', word)
-        # print('word mu i lo {}'.format(word))
-        
-        # remove RP
-        if 'rp' in word:
-            word = re.sub('rp', '', word)
-        # print('word phase 2 :{}'.format(word))
-        
-        # check is it number
-        amount = re.search(r'^\d+(?:,\d*)?$', word)
-        # print("amount : {}".format(amount))
-        
-        if amount is None:
-          if len(tempAmount) >= 1:
-            break
-          else:
-            continue
-        else: 
-            # print("ndek kene bro dee")
-            tempAmount.append(amount.group())
-    
-    if len(tempAmount) > 1:
-        finalAmount = int(''.join(tempAmount))
-    elif len(tempAmount) == 0:
-        finalAmount = 0
-    else:
-        finalAmount = int(tempAmount[0])
-
-    return finalAmount
+    for word in text.lower().split("\n"):
+        if 'total' in word:
+            removeChars = re.sub("[^\s\.,\d]", "", word).replace(
+                " ", "")
+            regexAmount = re.search(
+                r'^(0|[1-9][0-9]{0,2})([\.,]\d{3})*(\.\d{1,2})?$', removeChars)
+            return regexAmount.group()
+        elif 'subtotal' in word:
+            removeChars = re.sub("[^\s\.,\d]", "", word).replace(
+                " ", "")
+            regexAmount = re.search(
+                r'^(0|[1-9][0-9]{0,2})([\.,]\d{3})*(\.\d{1,2})?$', removeChars)
+            return regexAmount.group()
 
 @app.route('/', methods=['GET'])
 def index():
@@ -76,12 +38,29 @@ def index():
 @app.route('/scan', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
-        image = request.files['file'].read()
+        f = request.files['file']
+
+        # create a secure filename
+        filename = secure_filename(f.filename)
+
+        # save file to /static/uploads
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        # load the example image and convert it to grayscale
+        image = cv2.imread(filepath, 0)
+
+        # save the processed image in the /static/uploads directory
+        ofilename = os.path.join(
+            app.config['UPLOAD_FOLDER'], "{}.png".format(os.getpid()))
+        cv2.imwrite(ofilename, image)
 
         # perform OCR on the processed image
         final_amounts = findTotal(ocrOCR(image))
 
-        if final_amounts != 0:
+        # remove the processed image
+        os.remove(ofilename)
+
+        if len(final_amounts) != 0:
             data_returned = {
                 "status": "true",
                 "amounts": final_amounts,
@@ -95,4 +74,4 @@ def upload_file():
         return jsonify(data_returned)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=False)
