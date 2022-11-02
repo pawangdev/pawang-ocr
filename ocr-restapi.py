@@ -12,7 +12,7 @@ UPLOAD_FOLDER = 'uploaded_img/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def ocrOCR(image):
-    myconfig = r"--oem 3 --psm 6"
+    myconfig = r"--oem 3 --psm 11"
     return pytesseract.image_to_string(image, config=myconfig, lang='ind')
 
 
