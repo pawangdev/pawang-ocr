@@ -4,7 +4,7 @@ import os
 import cv2
 import ocr
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/images')
 UPLOAD_FOLDER = 'images/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
@@ -36,6 +36,8 @@ def receipt():
         file.save(filepath)
 
         data = ocr.get_string(filepath)
+        print(data)
+
         data = ocr.text_preprocessing(data)
         amount = ocr.find_amount(data)
 
