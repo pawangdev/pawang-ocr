@@ -44,7 +44,3 @@ jobs:
             docker image rm -f ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
             docker run -d -p 8080:80 --restart always -v /home/pawang/pawang-ocr/images:/app/images --name pawang-ocr ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
