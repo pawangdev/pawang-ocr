@@ -36,6 +36,7 @@ def receipt():
         file.save(filepath)
 
         data = ocr.get_string(filepath)
+        print(data)
         data = ocr.text_preprocessing(data)
         amount = ocr.find_amount(data)
 
