@@ -17,10 +17,10 @@ def get_string(img_path):
         gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
     # Scale and pad image
-    factor = 1000 / thresh.shape[0]
-    thresh = cv2.resize(thresh, None, fx=factor, fy=factor)
-    thresh = cv2.copyMakeBorder(thresh, 10, 10, 10, 10,
-                                cv2.BORDER_CONSTANT, value=[255, 255, 255])
+    # factor = 1000 / thresh.shape[0]
+    # thresh = cv2.resize(thresh, None, fx=factor, fy=factor)
+    # thresh = cv2.copyMakeBorder(thresh, 10, 10, 10, 10,
+    #                             cv2.BORDER_CONSTANT, value=[255, 255, 255])
 
     # Apply dilation and erosion to remove some noise
     kernel = np.ones((1, 1), np.uint8)
