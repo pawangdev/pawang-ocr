@@ -8,6 +8,7 @@ RUN apk add --no-cache \
     cargo \
     g++ \
     gcc \
+    curl \
     jpeg-dev \
     lapack-dev \
     libffi-dev \
