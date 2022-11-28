@@ -22,7 +22,11 @@ RUN apk add --no-cache \
 
 COPY ./requirements.txt /app/requirements.txt
 
-RUN pip install --upgrade pip
+RUN pip uninstall pip
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python get-pip.py
+RUN pip install pyopenssl
+
 RUN pip install -U pip setuptools wheel cython
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
