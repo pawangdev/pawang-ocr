@@ -17,8 +17,9 @@ RUN apt-get install -y zip unzip
 RUN wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.2.0.zip
 RUN unzip 5.2.0.zip
 RUN cd tesseract-5.2.0
-RUN ./autogen.sh
-RUN ./configure
+RUN ls -la
+RUN sh autogen.sh
+RUN sh configure
 RUN make
 RUN make install
 RUN ldconfig
