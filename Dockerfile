@@ -23,11 +23,9 @@ RUN apk add --no-cache \
 
 COPY ./requirements.txt /app/requirements.txt
 
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python get-pip.py
-RUN pip install pyopenssl
-
-RUN pip install -U pip setuptools wheel cython
+RUN pip install --upgrade pip setuptools wheel
+RUN pip install pip install opencv-python==4.5.3.56
+RUN pip install -U numpy
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 COPY . /app
