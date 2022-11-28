@@ -24,7 +24,7 @@ RUN make install
 RUN ldconfig
 RUN make training
 RUN make training-install
-RUN cd tessdata
+WORKDIR /app/tesseract-5.2.0/tessdata
 RUN wget https://github.com/tesseract-ocr/tessdata_best/raw/main/eng.traineddata
 RUN wget https://github.com/tesseract-ocr/tessdata_best/raw/main/ind.traineddata
 RUN wget https://github.com/tesseract-ocr/tessdata_best/raw/main/osd.traineddata
