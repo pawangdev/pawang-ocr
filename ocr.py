@@ -29,7 +29,7 @@ def get_string(img_path):
 
     # OCR
     data = pytesseract.image_to_string(
-        thresh, lang='ind', config='--psm 6 --oem 3 --tessdata-dir ./tessdata')
+        thresh, lang='ind', config='--psm 6 --oem 3')
     return data
 
 
