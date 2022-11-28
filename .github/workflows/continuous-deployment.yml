@@ -43,4 +43,4 @@ jobs:
             docker rm -f pawang-ocr
             docker image rm -f ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
-            docker run -d -p 8080:80 --restart always -v /home/pawang/pawang-ocr/images:/app/images --name pawang-ocr ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
+            docker run -d -p 8080:8080 --restart always -v /home/pawang/pawang-ocr/images:/app/images --name pawang-ocr ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
