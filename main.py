@@ -1,32 +1,46 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from flask import Flask, request
+from werkzeug.utils import secure_filename
+import os
+import cv2
 import ocr
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = Flask(__name__)
+UPLOAD_FOLDER = 'images/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 
 
-@app.get('/')
-async def index():
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/', methods=['GET'])
+def index():
     return {'message': 'Team Pawang OCR Service'}
 
 
-@app.post('/receipt', status_code=200)
-async def receipt(file: UploadFile):
-    image = await file.read()
-    try:
-        data = ocr.get_string(image)
+@app.route('/receipt', methods=['POST'])
+def receipt():
+    if 'file' not in request.files:
+        return {'status': False, 'message': 'FILE_NOT_FOUND'}, 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return {'status': False, 'message': 'FILE_NOT_FOUND'}, 400
+    if file and allowed_file(file.filename):
+        # Save File
+        filename = secure_filename(file.filename)
+        # Save File to /images
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        data = ocr.get_string(filepath)
         data = ocr.text_preprocessing(data)
         amount = ocr.find_amount(data)
+
         if amount == None:
-            raise Exception('Amount not found, please try again')
-        return {'status': True, 'amount': amount}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail={
-                            'status': False, 'message': str(e)})
+            return {'status': False, 'message': 'AMOUNT_NOT_FOUND'}, 400
+
+        return {'status': True, 'amount': amount}, 200
+    return {'status': False, 'message': 'FILE_IMAGE_ONLY'}, 400

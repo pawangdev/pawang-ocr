@@ -6,19 +6,9 @@ import string
 import io
 
 
-def read_cv2_image(binaryimg):
-
-    stream = io.BytesIO(binaryimg)
-
-    image = np.asarray(bytearray(stream.read()), dtype="uint8")
-    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-
-    return image
-
-
 def get_string(img_path):
     # Read image with opencv
-    image = read_cv2_image(img_path)
+    image = cv2.imread(img_path)
 
     # Adaptive thresholding
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
