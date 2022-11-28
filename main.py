@@ -36,7 +36,6 @@ def receipt():
         file.save(filepath)
 
         data = ocr.get_string(filepath)
-        print(data)
         data = ocr.text_preprocessing(data)
         amount = ocr.find_amount(data)
 
@@ -45,3 +44,7 @@ def receipt():
 
         return {'status': True, 'amount': amount}, 200
     return {'status': False, 'message': 'FILE_IMAGE_ONLY'}, 400
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=8080)

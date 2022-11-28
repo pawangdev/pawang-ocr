@@ -1,10 +1,13 @@
-FROM tiangolo/meinheld-gunicorn-flask:latest
+FROM python:alpine3.16
 
-RUN apt-get update -y
-RUN apt-get install -y python3-pip tesseract-ocr ffmpeg libsm6 libxext6
+WORKDIR /app
+
+RUN apk update && apk add tesseract-ocr
 
 COPY ./requirements.txt /app/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 COPY . /app
+
+CMD ["python", "main.py"]
