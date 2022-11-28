@@ -16,8 +16,7 @@ RUN apt-get install -y zip unzip
 
 RUN wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.2.0.zip
 RUN unzip 5.2.0.zip
-RUN cd tesseract-5.2.0
-RUN ls -la
+WORKDIR /app/tesseract-5.2.0
 RUN sh autogen.sh
 RUN sh configure
 RUN make
@@ -35,6 +34,8 @@ RUN tesseract --list-langs
 
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir -r /app/requirements.txt
+
+WORKDIR /app
 
 COPY . /app
 
