@@ -33,14 +33,15 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
 
-      - name: executing remote ssh commands using password
+      - name: Deploy on Server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          host: "139.59.99.122"
+          username: ${{ secrets.SSH_LB_USERNAME }}
+          password: ${{ secrets.SSH_LB_PASSWORD }}
           script: |
             docker rm -f pawang-ocr
             docker image rm -f ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
-            docker run -d -p 8080:8080 --restart always -v /home/pawang/pawang-ocr/images:/app/images --name pawang-ocr ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
+            docker run -d -p 8080:8080 --restart always -v /root/pawang-ocr/images:/app/images --name pawang-ocr-1 ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
+            docker run -d -p 8081:8080 --restart always -v /root/pawang-ocr/images:/app/images --name pawang-ocr-2 ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
