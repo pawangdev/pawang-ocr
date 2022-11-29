@@ -28,8 +28,10 @@ WORKDIR /app/tesseract-5.2.0/tessdata
 RUN wget https://github.com/tesseract-ocr/tessdata_best/raw/main/eng.traineddata
 RUN wget https://github.com/tesseract-ocr/tessdata_best/raw/main/ind.traineddata
 RUN wget https://github.com/tesseract-ocr/tessdata_best/raw/main/osd.traineddata
-RUN export TESSDATA_PREFIX=$(pwd)
+RUN export TESSDATA_PREFIX=/app/tesseract-5.2.0/tessdata
+ENV TESSDATA_PREFIX=/app/tesseract-5.2.0/tessdata
 RUN tesseract --list-langs
+RUN tesseract --version
 
 
 RUN pip install --upgrade pip setuptools wheel
