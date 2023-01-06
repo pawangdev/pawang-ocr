@@ -37,8 +37,8 @@ jobs:
               uses: appleboy/ssh-action@master
               with:
                   host: "206.189.90.119"
-                  username: ${{ secrets.SSH_USERNAME }}
-                  password: ${{ secrets.SSH_PASSWORD }}
+                  username: ${{ secrets.SSH_LB_USERNAME }}
+                  password: ${{ secrets.SSH_LB_PASSWORD }}
                   script: |
                       docker rm -f pawang-ocr
                       docker image rm -f ${{ secrets.DOCKERHUB_USERNAME }}/pawang-ocr:latest
